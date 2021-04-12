@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.myapplication">
 
+    <permission
+        android:name="com.example.myapplication.chapter_2.permission.ACCESS_BOOK_SERVICE"
+        android:protectionLevel="normal" />
+
+    <uses-permission android:name="com.example.myapplication.chapter_2.permission.ACCESS_BOOK_SERVICE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -26,7 +32,7 @@
             android:theme="@style/Theme.MyApplication.NoActionBar" />
 
         <service
-            android:name=".chapter_2.messenger.MessengerService"
+            android:name=".chapter_2.aidl.BookManagerService"
             android:process=":remote" />
 
     </application>
