@@ -1,23 +1,43 @@
 package com.example.myapplication
 
-import android.os.Bundle
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.*
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.model.User
+import com.example.myapplication.chapter_2.messenger.MessengerService
+import com.example.myapplication.constants.MyConstants
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import java.io.File
-import java.io.FileOutputStream
-import java.io.ObjectOutputStream
 
 class MainActivity : AppCompatActivity() {
     companion object {
         const val TAG: String = "wangruixiang"
-        const val DIR_PATH = "/user"
-        const val FILE_PATH = "/chapter_2_user"
     }
+
+    private lateinit var mService: Messenger
+    private val mConnection = object : ServiceConnection {
+        override fun onServiceDisconnected(name: ComponentName?) {
+            Log.i(TAG, "Service ${componentName?.shortClassName} is disconnected")
+        }
+
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            mService = Messenger(service)
+            val msg = Message.obtain(null, MyConstants.MSG_FROM_CLIENT)
+            msg.data = Bundle().also { b -> b.putString("msg", "hello, this is client.") }
+            msg.replyTo = mGetReplyMessenger
+            try {
+                mService.send(msg)
+            } catch (e: RemoteException) {
+                e.printStackTrace()
+            }
+        }
+    }
+    private val mGetReplyMessenger = Messenger(MessengerHandler())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,31 +47,14 @@ class MainActivity : AppCompatActivity() {
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
-
-
+            val intent = Intent(this@MainActivity, MessengerService::class.java)
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
         }
     }
 
-    private fun persistToFile() {
-        Thread(Runnable {
-            val user =
-                User(1, "hello world", true)
-            val dir = File(externalCacheDir?.absolutePath + DIR_PATH)
-            if (!dir.exists()) {
-                dir.mkdir()
-            }
-            val cachedFile = File(dir.absolutePath + FILE_PATH)
-            var objectOutputStream: ObjectOutputStream? = null
-            try {
-                objectOutputStream = ObjectOutputStream(FileOutputStream(cachedFile))
-                objectOutputStream.writeObject(user)
-                Log.d(TAG, "persist user: $user")
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                objectOutputStream?.close()
-            }
-        }).start()
+    override fun onDestroy() {
+        unbindService(mConnection)
+        super.onDestroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -67,6 +70,17 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private class MessengerHandler : Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                MyConstants.MSG_FROM_SERVER -> {
+                    Log.i(TAG, "receive msg from server: ${msg.data.getString("reply")}")
+                }
+                else -> super.handleMessage(msg)
+            }
         }
     }
 }

@@ -13,14 +13,25 @@ import com.example.myapplication.constants.MyConstants
 class MessengerService : Service() {
 
     companion object {
-        val TAG: String = MessengerService::class.java.simpleName
+        const val TAG: String = "wangruixiang"
     }
 
-    class MessengerHandler : Handler(Looper.getMainLooper()) {
+    private class MessengerHandler : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 MyConstants.MSG_FROM_CLIENT -> {
                     Log.i(TAG, "receive msg from client: " + msg.data.getString("msg"))
+                    val reply = Message.obtain()
+                    reply.what = MyConstants.MSG_FROM_SERVER
+                    reply.data = Bundle().let { b ->
+                        b.putString("reply", "嗯，你的消息我已经收到，稍后会回复你。")
+                        b
+                    }
+                    try {
+                        msg.replyTo.send(reply)
+                    } catch (e: RemoteException) {
+                        e.printStackTrace()
+                    }
                 }
                 else -> super.handleMessage(msg)
             }
