@@ -7,6 +7,8 @@
         android:protectionLevel="normal" />
 
     <uses-permission android:name="com.example.myapplication.chapter_2.permission.ACCESS_BOOK_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -31,8 +33,17 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.MyApplication.NoActionBar" />
 
+        <activity
+            android:name=".chapter_2.socket.TCPClientActivity"
+            android:theme="@style/Theme.MyApplication"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
         <service
             android:name=".chapter_2.aidl.BookManagerService"
+            android:process=":remote" />
+
+        <service
+            android:name=".chapter_2.socket.TCPServerService"
             android:process=":remote" />
 
         <provider

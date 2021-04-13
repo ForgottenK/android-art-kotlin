@@ -1,14 +1,11 @@
 package com.example.myapplication
 
-import android.content.ContentValues
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.aidl.Book
-import com.example.myapplication.chapter_2.contentprovider.BookProvider
-import com.example.myapplication.model.User
+import com.example.myapplication.chapter_2.socket.TCPClientActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
@@ -23,43 +20,9 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            Snackbar.make(view, "查询数据中", Snackbar.LENGTH_LONG).show()
-            addBook()
-            queryBook()
-            queryUser()
+            Snackbar.make(view, "正在前往聊天室", Snackbar.LENGTH_LONG).show()
+            startActivity(Intent(this@MainActivity, TCPClientActivity::class.java))
         }
-    }
-
-    private fun queryUser() {
-        val userUri = BookProvider.USER_CONTENT_URI
-        val userCursor =
-            contentResolver.query(userUri, arrayOf("_id", "name", "sex"), null, null, null)
-        while (userCursor != null && userCursor.moveToNext()) {
-            val id = userCursor.getInt(0)
-            val name = userCursor.getString(1)
-            val isMale = userCursor.getInt(2) == 1
-            Log.d(TAG, "query user: ${User(id, name, isMale)}")
-        }
-        userCursor?.close()
-    }
-
-    private fun queryBook() {
-        val bookUri = BookProvider.BOOK_CONTENT_URI
-        contentResolver.query(bookUri, arrayOf("_id", "name"), null, null, null).use {
-            if (it != null) {
-                while (it.moveToNext()) {
-                    val id = it.getInt(0)
-                    val name = it.getString(1)
-                    Log.d(TAG, "query book: ${Book(id, name)}")
-                }
-            }
-        }
-    }
-
-    private fun addBook() {
-        val bookUri = BookProvider.BOOK_CONTENT_URI
-        val values = ContentValues().also { it.put("_id", 6); it.put("name", "程序设计的艺术") }
-        contentResolver.insert(bookUri, values)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
