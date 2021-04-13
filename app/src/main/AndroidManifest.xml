@@ -35,6 +35,12 @@
             android:name=".chapter_2.aidl.BookManagerService"
             android:process=":remote" />
 
+        <provider
+            android:name=".chapter_2.contentprovider.BookProvider"
+            android:authorities="com.example.myapplication.chapter_2.book.provider"
+            android:permission="com.example.PROVIDER"
+            android:process=":provider" />
+
     </application>
 
 </manifest>
