@@ -46,6 +46,10 @@
             android:name=".chapter_2.socket.TCPServerService"
             android:process=":remote" />
 
+        <service
+            android:name=".chapter_2.binderpool.BinderPoolService"
+            android:process=":remote" />
+
         <provider
             android:name=".chapter_2.contentprovider.BookProvider"
             android:authorities="com.example.myapplication.chapter_2.book.provider"
