@@ -38,6 +38,10 @@
             android:theme="@style/Theme.MyApplication"
             android:windowSoftInputMode="adjustResize|stateHidden" />
 
+        <activity
+            android:name=".chapter_3.scrollconflict.ScrollConflictActivity"
+            android:theme="@style/Theme.MyApplication.NoActionBar" />
+
         <service
             android:name=".chapter_2.aidl.BookManagerService"
             android:process=":remote" />

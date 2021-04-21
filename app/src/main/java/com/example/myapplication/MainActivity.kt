@@ -1,9 +1,11 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.example.myapplication.chapter_3.scrollconflict.ScrollConflictActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
@@ -19,6 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
             Snackbar.make(view, "Binder 连接池测试中", Snackbar.LENGTH_LONG).show()
+            startActivity(Intent(this@MainActivity, ScrollConflictActivity::class.java))
         }
     }
 

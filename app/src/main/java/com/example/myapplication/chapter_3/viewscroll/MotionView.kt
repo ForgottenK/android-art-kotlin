@@ -25,8 +25,10 @@ class MotionView : View {
 
     var lastX: Float = 0f
     var lastY: Float = 0f
-//    var transX: Float = 0f
-//    var transY: Float = 0f
+
+    //    var transX: Float = 0f
+    //    var transY: Float = 0f
+    var containMove: Boolean = false
 
     override fun performClick(): Boolean {
         Log.d(TAG, "MotionView.performClick()")
@@ -41,8 +43,10 @@ class MotionView : View {
                 MotionEvent.ACTION_DOWN -> {
                     lastX = x
                     lastY = y
+                    containMove = false
                 }
                 MotionEvent.ACTION_MOVE -> {
+                    containMove = true
                     val deltaX = x - lastX
                     val deltaY = y - lastY
                     Log.d(
@@ -59,7 +63,11 @@ class MotionView : View {
                     translationX += deltaX
                     translationY += deltaY
                 }
-                MotionEvent.ACTION_UP -> performClick()
+                MotionEvent.ACTION_UP -> {
+                    if (!containMove) {
+                        performClick()
+                    }
+                }
             }
             lastX = x
             lastY = y
