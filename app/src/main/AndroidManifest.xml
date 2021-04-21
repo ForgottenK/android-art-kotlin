@@ -42,6 +42,10 @@
             android:name=".chapter_3.scrollconflict.ScrollConflictActivity"
             android:theme="@style/Theme.MyApplication.NoActionBar" />
 
+        <activity
+            android:name=".chapter_4.CircleViewActivity"
+            android:theme="@style/Theme.MyApplication.NoActionBar" />
+
         <service
             android:name=".chapter_2.aidl.BookManagerService"
             android:process=":remote" />
