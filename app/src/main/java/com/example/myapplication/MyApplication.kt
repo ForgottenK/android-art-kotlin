@@ -1,7 +1,7 @@
 package com.example.myapplication
 
 import android.app.Application
-import com.example.myapplication.chapter13.CrashHandler
+import com.example.myapplication.chapter_13.CrashHandler
 
 /**
  *    @author wangruixiang

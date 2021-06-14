@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".chapter13.CrashActivity"
+            android:name=".chapter_1.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyApplication.NoActionBar">
             <intent-filter>
