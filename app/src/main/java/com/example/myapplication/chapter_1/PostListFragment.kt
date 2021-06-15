@@ -20,6 +20,7 @@ import java.util.*
 class PostListFragment : Fragment() {
     lateinit var postList: RecyclerView
     lateinit var adapter: PostItemRecyclerAdapter
+    var postClickListener: OnPostClickListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +38,7 @@ class PostListFragment : Fragment() {
                 LinearLayoutManager(context)
             }
         }
-        adapter = PostItemRecyclerAdapter()
+        adapter = PostItemRecyclerAdapter(onPostClickListener = postClickListener)
         postList.adapter = adapter
 
         return contentView
@@ -45,11 +46,6 @@ class PostListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.setPostClickListener(object : OnPostClickListener {
-            override fun onPostClicked(post: Post) {
-                // TODO: 2021/6/15 选中对应帖子
-            }
-        })
         GlobalScope.launch {
             val postList = getPostList()
             withContext(Dispatchers.Main) {
@@ -87,11 +83,11 @@ class PostListFragment : Fragment() {
         return dates
     }
 
-    class PostItemRecyclerAdapter() :
+    class PostItemRecyclerAdapter(onPostClickListener: OnPostClickListener? = null) :
         RecyclerView.Adapter<PostItemRecyclerAdapter.ViewHolder>() {
 
         private val data = mutableListOf<Post>()
-        private var listener: OnPostClickListener? = null
+        var listener: OnPostClickListener? = onPostClickListener
 
         fun setData(posts: List<Post>) {
             data.clear()
@@ -118,13 +114,9 @@ class PostListFragment : Fragment() {
             holder.post = post
             holder.id.text = post.id
             holder.content.text = post.content
-            holder.content.setOnClickListener {
+            holder.view.setOnClickListener {
                 listener?.onPostClicked(post)
             }
-        }
-
-        fun setPostClickListener(listener: OnPostClickListener) {
-            this.listener = listener
         }
 
         inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
@@ -146,15 +138,15 @@ class PostListFragment : Fragment() {
     companion object {
         const val KEY_COLUMN_COUNT = "key_column_count"
 
-        fun newInstance(): PostListFragment {
-            return newInstance(1)
-        }
-
-        fun newInstance(columnCount: Int): PostListFragment {
+        fun newInstance(
+            columnCount: Int = 1,
+            onPostClickListener: OnPostClickListener? = null
+        ): PostListFragment {
             val args = Bundle()
             args.putInt(KEY_COLUMN_COUNT, columnCount)
             val fragment = PostListFragment()
             fragment.arguments = args
+            fragment.postClickListener = onPostClickListener
             return fragment
         }
     }
