@@ -17,7 +17,7 @@ import java.util.*
  *    @author wangruixiang
  *    @date 2021/6/14 11:52 PM
  */
-class PostListFragment private constructor() : Fragment() {
+class PostListFragment : Fragment() {
     lateinit var postList: RecyclerView
     lateinit var adapter: PostItemRecyclerAdapter
 

@@ -12,7 +12,7 @@ import com.example.myapplication.R
  *    @author wangruixiang
  *    @date 2021/6/14 11:10 PM
  */
-class PostDetailFragment private constructor() : Fragment() {
+class PostDetailFragment : Fragment() {
     lateinit var detailText: TextView
 
     override fun onCreateView(
