@@ -57,11 +57,11 @@ class PostListFragment : Fragment(), IPostListView {
 
     override fun getDatabaseContext() = context
 
-    override fun onDestroy() {
-        presenter?.onDestroy()
-        presenter = null
-        super.onDestroy()
-    }
+//    override fun onDestroy() {
+//        presenter?.onDestroy()
+//        presenter = null
+//        super.onDestroy()
+//    }
 
     class PostItemRecyclerAdapter(onPostClickListener: OnPostClickListener? = null) :
         RecyclerView.Adapter<PostItemRecyclerAdapter.ViewHolder>() {

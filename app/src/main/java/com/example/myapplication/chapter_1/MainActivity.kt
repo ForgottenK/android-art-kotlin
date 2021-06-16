@@ -22,13 +22,13 @@ class MainActivity : AppCompatActivity() {
 
         addFragment(
             R.id.fragment_post_list,
-            PostListFragment.newInstance(onPostClickListener = object :
-                PostListFragment.OnPostClickListener {
-                override fun onPostClicked(post: Post) {
-                    selectedPost = post
-                    addFragment(R.id.fragment_post_detail, PostDetailFragment.newInstance(post))
-                }
-            })
+            PostListFragment.newInstance(
+                onPostClickListener = object : PostListFragment.OnPostClickListener {
+                    override fun onPostClicked(post: Post) {
+                        selectedPost = post
+                        addFragment(R.id.fragment_post_detail, PostDetailFragment.newInstance(post))
+                    }
+                })
         )
         selectedPost = savedInstanceState?.getParcelable(KEY_SELECTED_POST)
         Log.d(TAG, "MainActivity.onCreate, selectedPost = $selectedPost")

@@ -40,7 +40,7 @@ class PostListPresenter(var iPostListView: IPostListView?) : IPostListPresenter 
         for (i in 1..10) {
             networkPosts.add(Post(i, users.random(), "Post #$i", dates.random()))
         }
-        delay(500)
+        delay(10000)
         return networkPosts
     }
 
