@@ -11,12 +11,12 @@ import java.util.*
  *    @author wangruixiang
  *    @date 2021/6/15 8:36 PM
  */
-class PostListPresenter(private val iPostListView: IPostListView?) : IPostListPresenter,
-    LifecycleObserver {
+class PostListPresenter(private val iPostListView: IPostListView?) : LifecycleObserver {
 
     private lateinit var requestPostListJob: Job
 
-    override fun requestPostListData() {
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun requestPostListData() {
         requestPostListJob = GlobalScope.launch {
             val postList = getPostList()
             withContext(Dispatchers.Main) {
@@ -105,8 +105,4 @@ class PostListPresenter(private val iPostListView: IPostListView?) : IPostListPr
     companion object {
         const val TAG = "wangruixiang"
     }
-}
-
-interface IPostListPresenter {
-    fun requestPostListData()
 }

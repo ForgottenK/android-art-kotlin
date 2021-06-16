@@ -21,16 +21,17 @@ class PostListFragment : Fragment(), IPostListView {
     private lateinit var adapter: PostItemRecyclerAdapter
     var postClickListener: OnPostClickListener? = null
 
-    private var presenter: IPostListPresenter? = null
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val contentView = inflater.inflate(R.layout.fragment_post_list, container, false)
+        return inflater.inflate(R.layout.fragment_post_list, container, false)
+    }
 
-        postList = contentView.findViewById(R.id.rv_fragment_post_list)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        postList = view.findViewById(R.id.rv_fragment_post_list)
         postList.layoutManager = let<PostListFragment, RecyclerView.LayoutManager> {
             val columnCount = arguments?.getInt(KEY_COLUMN_COUNT)
             if (columnCount != null && columnCount > 1) {
@@ -42,15 +43,7 @@ class PostListFragment : Fragment(), IPostListView {
         adapter = PostItemRecyclerAdapter(onPostClickListener = postClickListener)
         postList.adapter = adapter
 
-        return contentView
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        presenter = PostListPresenter(this@PostListFragment).also {
-            lifecycle.addObserver(it)
-            it.requestPostListData()
-        }
+        lifecycle.addObserver(PostListPresenter(this))
     }
 
     override fun onReceivePostListData(postList: List<Post>) {
