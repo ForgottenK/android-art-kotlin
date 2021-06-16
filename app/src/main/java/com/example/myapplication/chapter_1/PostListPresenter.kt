@@ -1,6 +1,9 @@
 package com.example.myapplication.chapter_1
 
 import android.util.Log
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -8,7 +11,8 @@ import java.util.*
  *    @author wangruixiang
  *    @date 2021/6/15 8:36 PM
  */
-class PostListPresenter(var iPostListView: IPostListView?) : IPostListPresenter {
+class PostListPresenter(private val iPostListView: IPostListView?) : IPostListPresenter,
+    LifecycleObserver {
 
     private lateinit var requestPostListJob: Job
 
@@ -90,11 +94,12 @@ class PostListPresenter(var iPostListView: IPostListView?) : IPostListPresenter 
         return dates
     }
 
-    override fun onDestroy() {
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onDestroy() {
+        Log.d(TAG, "PostListPresenter.onDestroy(), received lifecycle ON_DESTROY event")
         if (requestPostListJob.isActive) {
             requestPostListJob.cancel()
         }
-        iPostListView = null
     }
 
     companion object {
@@ -104,5 +109,4 @@ class PostListPresenter(var iPostListView: IPostListView?) : IPostListPresenter 
 
 interface IPostListPresenter {
     fun requestPostListData()
-    fun onDestroy()
 }

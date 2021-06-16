@@ -47,8 +47,10 @@ class PostListFragment : Fragment(), IPostListView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter = PostListPresenter(this@PostListFragment)
-        presenter?.requestPostListData()
+        presenter = PostListPresenter(this@PostListFragment).also {
+            lifecycle.addObserver(it)
+            it.requestPostListData()
+        }
     }
 
     override fun onReceivePostListData(postList: List<Post>) {
@@ -56,12 +58,6 @@ class PostListFragment : Fragment(), IPostListView {
     }
 
     override fun getDatabaseContext() = context
-
-//    override fun onDestroy() {
-//        presenter?.onDestroy()
-//        presenter = null
-//        super.onDestroy()
-//    }
 
     class PostItemRecyclerAdapter(onPostClickListener: OnPostClickListener? = null) :
         RecyclerView.Adapter<PostItemRecyclerAdapter.ViewHolder>() {
