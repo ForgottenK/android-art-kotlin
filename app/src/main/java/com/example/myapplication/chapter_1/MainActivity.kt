@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
 fun AppCompatActivity.addFragment(@IdRes fragmentId: Int, fragment: Fragment) {
     val current = supportFragmentManager.findFragmentById(fragmentId)
-    if (current === null) {
+    if (current == null) {
         supportFragmentManager.beginTransaction().add(fragmentId, fragment).commit()
     } else {
         supportFragmentManager.beginTransaction().replace(fragmentId, fragment).commit()

@@ -10,17 +10,17 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
-import kotlinx.coroutines.*
-import java.util.*
 
 /**
  *    @author wangruixiang
  *    @date 2021/6/14 11:52 PM
  */
-class PostListFragment : Fragment() {
-    lateinit var postList: RecyclerView
-    lateinit var adapter: PostItemRecyclerAdapter
+class PostListFragment : Fragment(), IPostListView {
+    private lateinit var postList: RecyclerView
+    private lateinit var adapter: PostItemRecyclerAdapter
     var postClickListener: OnPostClickListener? = null
+
+    private var presenter: IPostListPresenter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,41 +46,18 @@ class PostListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        GlobalScope.launch {
-            val postList = getPostList()
-            withContext(Dispatchers.Main) {
-                adapter.setData(postList)
-            }
-        }
+        presenter = PostListPresenter(this@PostListFragment)
+        presenter?.requestPostListData()
     }
 
-    suspend fun getPostList(): List<Post> {
-        delay(500)
-        val users = listOf("frank", "bob", "mary", "eric", "kevin", "tom", "justin")
-        val dates = generateDates()
-
-        val postList = mutableListOf<Post>()
-        for (i in 1..50) {
-            postList.add(Post(i.toString(), users.random(), "Post #$i", dates.random()))
-        }
-        return postList
+    override fun onReceivePostListData(postList: List<Post>) {
+        adapter.setData(postList)
     }
 
-    private fun generateDates(): List<Date> {
-        val dates = mutableListOf<Date>()
-
-        val calendar = GregorianCalendar()
-        dates.add(calendar.time)
-        calendar.add(Calendar.YEAR, -1)
-        dates.add(calendar.time)
-        calendar.add(Calendar.MONTH, 6)
-        dates.add(calendar.time)
-        calendar.add(Calendar.DAY_OF_MONTH, 12)
-        dates.add(calendar.time)
-        calendar.add(Calendar.MONTH, 3)
-        dates.add(calendar.time)
-
-        return dates
+    override fun onDestroy() {
+        presenter?.onDestroy()
+        presenter = null
+        super.onDestroy()
     }
 
     class PostItemRecyclerAdapter(onPostClickListener: OnPostClickListener? = null) :
@@ -150,4 +127,8 @@ class PostListFragment : Fragment() {
             return fragment
         }
     }
+}
+
+interface IPostListView {
+    fun onReceivePostListData(postList: List<Post>)
 }
