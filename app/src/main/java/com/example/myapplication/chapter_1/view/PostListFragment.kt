@@ -1,7 +1,7 @@
-package com.example.myapplication.chapter_1
+package com.example.myapplication.chapter_1.view
 
-import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
+import com.example.myapplication.chapter_1.model.entity.Post
+import com.example.myapplication.chapter_1.presenter.PostListPresenter
 
 /**
  *    @author wangruixiang
@@ -47,10 +49,9 @@ class PostListFragment : Fragment(), IPostListView {
     }
 
     override fun onReceivePostListData(postList: List<Post>) {
+        Log.d(TAG, "PostListFragment.onReceivePostListData(), postList.size = ${postList.size}")
         adapter.setData(postList)
     }
-
-    override fun getDatabaseContext() = context
 
     class PostItemRecyclerAdapter(onPostClickListener: OnPostClickListener? = null) :
         RecyclerView.Adapter<PostItemRecyclerAdapter.ViewHolder>() {
@@ -105,6 +106,7 @@ class PostListFragment : Fragment(), IPostListView {
     }
 
     companion object {
+        const val TAG = "wangruixiang"
         const val KEY_COLUMN_COUNT = "key_column_count"
 
         fun newInstance(
@@ -123,5 +125,4 @@ class PostListFragment : Fragment(), IPostListView {
 
 interface IPostListView {
     fun onReceivePostListData(postList: List<Post>)
-    fun getDatabaseContext(): Context?
 }

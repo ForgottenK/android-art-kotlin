@@ -1,4 +1,4 @@
-package com.example.myapplication.chapter_1
+package com.example.myapplication.chapter_1.model.db
 
 import androidx.room.TypeConverter
 import java.util.*

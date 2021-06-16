@@ -1,4 +1,4 @@
-package com.example.myapplication.chapter_1
+package com.example.myapplication.chapter_1.view
 
 import android.content.res.Configuration
 import android.os.Bundle
@@ -7,6 +7,7 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.myapplication.R
+import com.example.myapplication.chapter_1.model.entity.Post
 
 /**
  *    @author wangruixiang

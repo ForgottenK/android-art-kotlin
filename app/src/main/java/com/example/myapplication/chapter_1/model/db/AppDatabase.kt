@@ -1,10 +1,11 @@
-package com.example.myapplication.chapter_1
+package com.example.myapplication.chapter_1.model.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.myapplication.chapter_1.model.entity.Post
 
 /**
  *    @author wangruixiang

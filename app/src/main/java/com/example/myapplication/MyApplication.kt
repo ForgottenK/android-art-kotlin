@@ -1,6 +1,8 @@
 package com.example.myapplication
 
 import android.app.Application
+import com.example.myapplication.chapter_1.model.db.AppDatabase
+import com.example.myapplication.chapter_1.model.db.PostRepository
 import com.example.myapplication.chapter_13.CrashHandler
 
 /**
@@ -9,6 +11,9 @@ import com.example.myapplication.chapter_13.CrashHandler
  */
 
 class MyApplication : Application() {
+
+    val appDatabase by lazy { AppDatabase.getInstance(this) }
+    val postRepository by lazy { PostRepository(appDatabase.postDao()) }
 
     override fun onCreate() {
         super.onCreate()
