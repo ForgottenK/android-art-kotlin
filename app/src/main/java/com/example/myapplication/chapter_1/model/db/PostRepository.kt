@@ -2,9 +2,11 @@ package com.example.myapplication.chapter_1.model.db
 
 import android.util.Log
 import com.example.myapplication.chapter_1.model.entity.Post
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.util.*
 
 /**
@@ -17,7 +19,7 @@ class PostRepository(private val postDao: PostDao) {
         return flow {
             emit(postDao.getAllPosts())
             emit(getPostListFromNetwork())
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     suspend fun savePostsToDB(posts: List<Post>) {
