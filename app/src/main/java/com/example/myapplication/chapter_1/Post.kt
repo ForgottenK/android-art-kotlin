@@ -2,6 +2,8 @@ package com.example.myapplication.chapter_1
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -9,17 +11,22 @@ import java.util.*
  *    @author wangruixiang
  *    @date 2021/6/14 11:00 PM
  */
-data class Post(var id: String, var user: String, var content: String, var date: Date = Date()) :
-    Parcelable {
+@Entity(tableName = "post_table")
+data class Post(
+    @PrimaryKey var id: Int,
+    var user: String,
+    var content: String,
+    var date: Date = Date()
+) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readString() ?: "",
+        parcel.readInt(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         Date(parcel.readLong())
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(id)
+        parcel.writeInt(id)
         parcel.writeString(user)
         parcel.writeString(content)
         parcel.writeLong(date.time)

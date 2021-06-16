@@ -8,7 +8,7 @@ import com.example.myapplication.chapter_13.CrashHandler
  *    @date 2021/4/27 4:33 PM
  */
 
-class TestApp : Application() {
+class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -20,7 +20,7 @@ class TestApp : Application() {
     }
 
     companion object {
-        var instance: TestApp? = null
+        var instance: MyApplication? = null
             private set
     }
 }

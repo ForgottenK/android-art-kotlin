@@ -1,5 +1,6 @@
 package com.example.myapplication.chapter_1
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -54,6 +55,8 @@ class PostListFragment : Fragment(), IPostListView {
         adapter.setData(postList)
     }
 
+    override fun getDatabaseContext() = context
+
     override fun onDestroy() {
         presenter?.onDestroy()
         presenter = null
@@ -89,7 +92,7 @@ class PostListFragment : Fragment(), IPostListView {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val post = data[position]
             holder.post = post
-            holder.id.text = post.id
+            holder.id.text = post.id.toString()
             holder.content.text = post.content
             holder.view.setOnClickListener {
                 listener?.onPostClicked(post)
@@ -131,4 +134,5 @@ class PostListFragment : Fragment(), IPostListView {
 
 interface IPostListView {
     fun onReceivePostListData(postList: List<Post>)
+    fun getDatabaseContext(): Context?
 }
