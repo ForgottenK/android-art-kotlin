@@ -11,8 +11,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
+import com.example.myapplication.chapter_1.model.entity.CreatePostMessage
+import com.example.myapplication.chapter_1.model.entity.MessageEvent
 import com.example.myapplication.chapter_1.model.entity.Post
 import com.example.myapplication.chapter_1.presenter.PostListPresenter
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  *    @author wangruixiang
@@ -46,11 +51,27 @@ class PostListFragment : Fragment(), IPostListView {
         postList.adapter = adapter
 
         lifecycle.addObserver(PostListPresenter(this))
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onDestroyView() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroyView()
     }
 
     override fun onReceivePostListData(postList: List<Post>) {
         Log.d(TAG, "PostListFragment.onReceivePostListData(), postList.size = ${postList.size}")
         adapter.setData(postList)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(messageEvent: MessageEvent) {
+        when (messageEvent) {
+            is CreatePostMessage -> {
+                adapter.insertData(messageEvent.newPost, 0)
+                postList.scrollToPosition(0)
+            }
+        }
     }
 
     class PostItemRecyclerAdapter(onPostClickListener: OnPostClickListener? = null) :
@@ -67,6 +88,19 @@ class PostListFragment : Fragment(), IPostListView {
         fun addData(morePosts: List<Post>) {
             data.addAll(morePosts)
             notifyDataSetChanged()
+        }
+
+        fun insertData(post: Post, index: Int) {
+            if (index < data.size) {
+                data.add(index, post)
+                Log.d(
+                    TAG,
+                    "PostItemRecyclerAdapter.insertData, post = $post, data.size = ${data.size}"
+                )
+                notifyItemInserted(index)
+            } else {
+                throw IndexOutOfBoundsException("PostItemRecyclerAdapter.insertData() out of bound, index = $index but data.size = ${data.size}")
+            }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

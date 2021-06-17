@@ -6,8 +6,12 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.R
+import com.example.myapplication.chapter_1.model.entity.CreatePostMessage
 import com.example.myapplication.chapter_1.model.entity.Post
+import com.example.myapplication.chapter_1.model.entity.USER_CREATED_ID
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import org.greenrobot.eventbus.EventBus
+import java.util.*
 
 /**
  *    @author wangruixiang
@@ -40,7 +44,8 @@ class PostDetailActivity : AppCompatActivity() {
         btnPostLike.visibility = View.GONE
 
         btnCreatePost.setOnClickListener {
-            // TODO: 2021/6/17 create new post and add to list
+            val newPost = Post(USER_CREATED_ID, "master", "new post", Date())
+            EventBus.getDefault().post(CreatePostMessage(newPost))
         }
     }
 

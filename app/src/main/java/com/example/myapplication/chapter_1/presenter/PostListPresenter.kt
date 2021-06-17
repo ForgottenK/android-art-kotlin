@@ -18,7 +18,7 @@ class PostListPresenter(private val iPostListView: IPostListView) : LifecycleObs
 
     private lateinit var requestPostListJob: Job
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun requestPostListData(owner: LifecycleOwner) {
         requestPostListJob = MyApplication.instance?.postRepository?.getPosts()!!
             .onEach { iPostListView.onReceivePostListData(it) }

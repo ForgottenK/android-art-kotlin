@@ -62,4 +62,7 @@ dependencies {
 
     // leak canary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+
+    // eventBus
+    implementation 'org.greenrobot:eventbus:3.2.0'
 }

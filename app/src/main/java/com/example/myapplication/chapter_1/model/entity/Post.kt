@@ -11,6 +11,8 @@ import java.util.*
  *    @author wangruixiang
  *    @date 2021/6/14 11:00 PM
  */
+const val USER_CREATED_ID = -1
+
 @Entity(tableName = "post_table")
 data class Post(
     @PrimaryKey var id: Int,
