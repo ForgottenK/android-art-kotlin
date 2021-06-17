@@ -30,7 +30,6 @@ class PostListPresenter(private val iPostListView: IPostListView) : LifecycleObs
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun onDestroy() {
-        Log.d(TAG, "PostListPresenter.onDestroy(), received lifecycle ON_DESTROY event")
         if (requestPostListJob.isActive) {
             requestPostListJob.cancel()
         }
