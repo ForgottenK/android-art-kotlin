@@ -2,6 +2,7 @@ package com.example.myapplication.chapter_1.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,13 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.myapplication.R
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_POST
+import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
+import com.example.myapplication.chapter_1.model.entity.LikePostMessage
+import com.example.myapplication.chapter_1.model.entity.MessageEvent
 import com.example.myapplication.chapter_1.model.entity.Post
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  *    @author wangruixiang
@@ -39,12 +46,13 @@ class PostDetailFragment : Fragment() {
 
         btnLikePost.setOnClickListener {
             post.like = !post.like
-            updatePostLikeButton()
+            updatePostStatus()
         }
         btnLikePost.visibility = View.GONE
 
         btnGotoDetail.setOnClickListener {
             val intent = Intent(activity, PostDetailActivity::class.java)
+            Log.d(TAG, "PostDetailFragment.onClick(), post.hashCode = ${post.hashCode()}")
             intent.putExtra(KEY_POST, post)
             startActivity(intent)
         }
@@ -52,14 +60,34 @@ class PostDetailFragment : Fragment() {
 
         arguments?.getParcelable<Post>(KEY_POST)?.let {
             post = it
-            detailText.text = post.toDisplayString()
-            updatePostLikeButton()
+            updatePostStatus()
             btnLikePost.visibility = View.VISIBLE
             btnGotoDetail.visibility = View.VISIBLE
         }
+
+        EventBus.getDefault().register(this)
     }
 
-    private fun updatePostLikeButton() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: MessageEvent) {
+        when (event) {
+            is LikePostMessage -> {
+                if (post.id == event.id) {
+                    post.like = event.like
+                    updatePostStatus()
+                }
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroyView()
+    }
+
+    private fun updatePostStatus() {
+        detailText.text = post.toDisplayString()
+
         val string = resources.getString(
             if (post.like) R.string.dislike_post
             else R.string.like_post

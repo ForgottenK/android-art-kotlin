@@ -12,8 +12,6 @@ import java.util.*
  *    @author wangruixiang
  *    @date 2021/6/14 11:00 PM
  */
-const val USER_CREATED_ID = -1
-
 @Entity(tableName = "post_table")
 data class Post(
     @PrimaryKey var id: Int,
@@ -54,10 +52,6 @@ data class Post(
 
     fun toDisplayString(): String {
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return "user: $user\ncontent: $content\ndate: ${simpleDateFormat.format(date)}"
-    }
-
-    override fun toString(): String {
-        return toDisplayString() + "\nlike: $like"
+        return "user: $user\ncontent: $content\ndate: ${simpleDateFormat.format(date)}\nlike: $like"
     }
 }

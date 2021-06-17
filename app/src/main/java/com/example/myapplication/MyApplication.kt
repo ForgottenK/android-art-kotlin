@@ -27,5 +27,8 @@ class MyApplication : Application() {
     companion object {
         var instance: MyApplication? = null
             private set
+        var userCreatedId = -1
+            private set
+            get() = field--
     }
 }

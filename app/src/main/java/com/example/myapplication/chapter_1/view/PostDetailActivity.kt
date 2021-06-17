@@ -1,15 +1,18 @@
 package com.example.myapplication.chapter_1.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.myapplication.MyApplication
 import com.example.myapplication.R
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_POST
+import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
 import com.example.myapplication.chapter_1.model.entity.CreatePostMessage
+import com.example.myapplication.chapter_1.model.entity.LikePostMessage
 import com.example.myapplication.chapter_1.model.entity.Post
-import com.example.myapplication.chapter_1.model.entity.USER_CREATED_ID
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.greenrobot.eventbus.EventBus
 
@@ -40,17 +43,20 @@ class PostDetailActivity : AppCompatActivity() {
 
         btnPostLike.setOnClickListener {
             post.like = !post.like
-            updatePostLikeButton()
+            updatePostStatus()
+            EventBus.getDefault().post(LikePostMessage(post.id, post.like))
         }
         btnPostLike.visibility = View.GONE
 
         btnCreatePost.setOnClickListener {
-            val newPost = Post(USER_CREATED_ID, "master", "new post")
+            val newPost = Post(MyApplication.userCreatedId, "master", "new post")
             EventBus.getDefault().post(CreatePostMessage(newPost))
         }
     }
 
-    private fun updatePostLikeButton() {
+    private fun updatePostStatus() {
+        tvPostDetail.text = post.toDisplayString()
+
         val string = resources.getString(
             if (post.like) R.string.dislike_post
             else R.string.like_post
@@ -60,9 +66,9 @@ class PostDetailActivity : AppCompatActivity() {
 
     private fun initData() {
         intent.getParcelableExtra<Post>(KEY_POST)?.let {
+            Log.d(TAG, "PostDetailActivity.initData(), post.hashCode = ${it.hashCode()}")
             post = it
-            tvPostDetail.text = post.toDisplayString()
-            updatePostLikeButton()
+            updatePostStatus()
             btnPostLike.visibility = View.VISIBLE
         }
     }
