@@ -7,6 +7,8 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.myapplication.R
+import com.example.myapplication.chapter_1.model.entity.Constants
+import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_SELECTED_POST
 import com.example.myapplication.chapter_1.model.entity.Post
 
 /**
@@ -32,24 +34,19 @@ class MainActivity : AppCompatActivity() {
                 })
         )
         selectedPost = savedInstanceState?.getParcelable(KEY_SELECTED_POST)
-        Log.d(TAG, "MainActivity.onCreate, selectedPost = $selectedPost")
+        Log.d(Constants.TAG, "MainActivity.onCreate, selectedPost = $selectedPost")
         addFragment(R.id.fragment_post_detail, PostDetailFragment.newInstance(selectedPost))
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Log.d(TAG, "MainActivity.onSaveInstanceState(), selectedPost = $selectedPost")
+        Log.d(Constants.TAG, "MainActivity.onSaveInstanceState(), selectedPost = $selectedPost")
         outState.putParcelable(KEY_SELECTED_POST, selectedPost)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        Log.d(TAG, "MainActivity.onConfigurationChanged()")
-    }
-
-    companion object {
-        const val TAG = "wangruixiang"
-        const val KEY_SELECTED_POST = "key_selected_post"
+        Log.d(Constants.TAG, "MainActivity.onConfigurationChanged()")
     }
 }
 

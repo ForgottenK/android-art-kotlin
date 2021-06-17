@@ -3,6 +3,7 @@ package com.example.myapplication.chapter_1.presenter
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.myapplication.MyApplication
+import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
 import com.example.myapplication.chapter_1.view.IPostListView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -33,9 +34,5 @@ class PostListPresenter(private val iPostListView: IPostListView) : LifecycleObs
         if (requestPostListJob.isActive) {
             requestPostListJob.cancel()
         }
-    }
-
-    companion object {
-        const val TAG = "wangruixiang"
     }
 }

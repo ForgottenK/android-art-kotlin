@@ -2,6 +2,7 @@ package com.example.myapplication.chapter_1.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,8 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.myapplication.R
+import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_POST
+import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
 import com.example.myapplication.chapter_1.model.entity.Post
 
 /**
@@ -44,12 +47,13 @@ class PostDetailFragment : Fragment() {
 
         btnGotoDetail.setOnClickListener {
             val intent = Intent(activity, PostDetailActivity::class.java)
-            intent.putExtra(PostDetailActivity.KEY_POST, post)
+            intent.putExtra(KEY_POST, post)
             startActivity(intent)
         }
         btnGotoDetail.visibility = View.GONE
 
         arguments?.getParcelable<Post>(KEY_POST)?.let {
+            Log.d(TAG, "PostDetailFragment.onViewCreated, arguments.post = $it")
             post = it
             detailText.text = post.toDisplayString()
             updatePostLikeButton()
@@ -67,8 +71,6 @@ class PostDetailFragment : Fragment() {
     }
 
     companion object {
-        const val KEY_POST = "key_post"
-
         fun newInstance(post: Post?): PostDetailFragment {
             val args = Bundle()
             args.putParcelable(KEY_POST, post)

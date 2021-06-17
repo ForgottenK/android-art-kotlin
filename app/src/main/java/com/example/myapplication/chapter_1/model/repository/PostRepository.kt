@@ -2,6 +2,7 @@ package com.example.myapplication.chapter_1.model.repository
 
 import android.util.Log
 import com.example.myapplication.chapter_1.model.db.PostDao
+import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
 import com.example.myapplication.chapter_1.model.entity.Post
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -62,10 +63,6 @@ class PostRepository(private val postDao: PostDao) {
         dates.add(calendar.time)
 
         return dates
-    }
-
-    companion object {
-        const val TAG = "wangruixiang"
     }
 
 }

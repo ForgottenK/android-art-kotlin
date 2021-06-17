@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.R
+import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_POST
 import com.example.myapplication.chapter_1.model.entity.CreatePostMessage
 import com.example.myapplication.chapter_1.model.entity.Post
 import com.example.myapplication.chapter_1.model.entity.USER_CREATED_ID
@@ -65,11 +66,4 @@ class PostDetailActivity : AppCompatActivity() {
             btnPostLike.visibility = View.VISIBLE
         }
     }
-
-    companion object {
-        const val TAG = "wangruixiang"
-        const val KEY_POST = "key_post"
-    }
-
-
 }

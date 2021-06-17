@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
+import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_COLUMN_COUNT
+import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
 import com.example.myapplication.chapter_1.model.entity.CreatePostMessage
 import com.example.myapplication.chapter_1.model.entity.MessageEvent
 import com.example.myapplication.chapter_1.model.entity.Post
@@ -140,9 +142,6 @@ class PostListFragment : Fragment(), IPostListView {
     }
 
     companion object {
-        const val TAG = "wangruixiang"
-        const val KEY_COLUMN_COUNT = "key_column_count"
-
         fun newInstance(
             columnCount: Int = 1,
             onPostClickListener: OnPostClickListener? = null
