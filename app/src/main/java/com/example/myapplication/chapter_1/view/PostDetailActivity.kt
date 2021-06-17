@@ -11,7 +11,6 @@ import com.example.myapplication.chapter_1.model.entity.Post
 import com.example.myapplication.chapter_1.model.entity.USER_CREATED_ID
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.greenrobot.eventbus.EventBus
-import java.util.*
 
 /**
  *    @author wangruixiang
@@ -39,21 +38,30 @@ class PostDetailActivity : AppCompatActivity() {
         btnCreatePost = findViewById(R.id.btn_create_post)
 
         btnPostLike.setOnClickListener {
-            // TODO: 2021/6/17 false write post like state
+            post.like = !post.like
+            updatePostLikeButton()
         }
         btnPostLike.visibility = View.GONE
 
         btnCreatePost.setOnClickListener {
-            val newPost = Post(USER_CREATED_ID, "master", "new post", Date())
+            val newPost = Post(USER_CREATED_ID, "master", "new post")
             EventBus.getDefault().post(CreatePostMessage(newPost))
         }
+    }
+
+    private fun updatePostLikeButton() {
+        val string = resources.getString(
+            if (post.like) R.string.dislike_post
+            else R.string.like_post
+        )
+        btnPostLike.text = string
     }
 
     private fun initData() {
         intent.getParcelableExtra<Post>(KEY_POST)?.let {
             post = it
-            tvPostDetail.text = post.toString()
-            // TODO: 2021/6/17 set like status
+            tvPostDetail.text = post.toDisplayString()
+            updatePostLikeButton()
             btnPostLike.visibility = View.VISIBLE
         }
     }

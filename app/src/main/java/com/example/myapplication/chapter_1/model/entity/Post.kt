@@ -2,6 +2,7 @@ package com.example.myapplication.chapter_1.model.entity
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.text.SimpleDateFormat
@@ -18,13 +19,15 @@ data class Post(
     @PrimaryKey var id: Int,
     var user: String,
     var content: String,
-    var date: Date = Date()
+    var date: Date = Date(),
+    @ColumnInfo(name = "like_post", defaultValue = "0") var like: Boolean = false
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        Date(parcel.readLong())
+        Date(parcel.readLong()),
+        parcel.readString().toBoolean()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -32,6 +35,7 @@ data class Post(
         parcel.writeString(user)
         parcel.writeString(content)
         parcel.writeLong(date.time)
+        parcel.writeString(like.toString())
     }
 
     override fun describeContents(): Int {
@@ -48,8 +52,12 @@ data class Post(
         }
     }
 
-    override fun toString(): String {
+    fun toDisplayString(): String {
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return "user: $user\ncontent: $content\ndate: ${simpleDateFormat.format(date)}"
+    }
+
+    override fun toString(): String {
+        return toDisplayString() + "\nlike: $like"
     }
 }

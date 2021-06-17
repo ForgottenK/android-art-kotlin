@@ -37,7 +37,8 @@ class PostDetailFragment : Fragment() {
         btnGotoDetail = view.findViewById(R.id.btn_goto_post_detail)
 
         btnLikePost.setOnClickListener {
-            // TODO: 2021/6/17 change like status
+            post.like = !post.like
+            updatePostLikeButton()
         }
         btnLikePost.visibility = View.GONE
 
@@ -50,10 +51,19 @@ class PostDetailFragment : Fragment() {
 
         arguments?.getParcelable<Post>(KEY_POST)?.let {
             post = it
-            detailText.text = post.toString()
+            detailText.text = post.toDisplayString()
+            updatePostLikeButton()
             btnLikePost.visibility = View.VISIBLE
             btnGotoDetail.visibility = View.VISIBLE
         }
+    }
+
+    private fun updatePostLikeButton() {
+        val string = resources.getString(
+            if (post.like) R.string.dislike_post
+            else R.string.like_post
+        )
+        btnLikePost.text = string
     }
 
     companion object {
