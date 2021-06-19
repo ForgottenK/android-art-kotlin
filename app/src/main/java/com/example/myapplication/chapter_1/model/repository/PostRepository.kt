@@ -15,12 +15,10 @@ import java.util.*
  */
 class PostRepository(private val postDao: PostDao) {
 
-    fun getPosts(): Flow<List<Post>> {
-        return flow {
-            emit(postDao.getAllPosts())
-            emit(getPostListFromNetwork())
-        }.flowOn(Dispatchers.IO)
-    }
+    fun getPosts(): Flow<List<Post>> = flow {
+        emit(postDao.getAllPosts())
+        emit(getPostListFromNetwork())
+    }.flowOn(Dispatchers.IO)
 
     suspend fun savePostsToDB(posts: List<Post>) {
         postDao.deleteAllPosts()

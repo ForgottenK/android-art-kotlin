@@ -1,42 +1,18 @@
 package com.example.myapplication.chapter_1.view.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.chapter_1.model.entity.Post
-import com.example.myapplication.chapter_1.model.entity.PostClickedMessage
-import org.greenrobot.eventbus.EventBus
+import com.example.myapplication.chapter_1.viewmodel.SharedPostViewModel
 
-class PostItemRecyclerAdapter : RecyclerView.Adapter<PostItemRecyclerAdapter.ViewHolder>() {
-
-    private val data = mutableListOf<Post>()
-
-    fun setData(posts: List<Post>) {
-        data.clear()
-        addData(posts)
-    }
-
-    fun addData(morePosts: List<Post>) {
-        data.addAll(morePosts)
-        notifyDataSetChanged()
-    }
-
-    fun insertData(post: Post, index: Int) {
-        if (index < data.size) {
-            data.add(index, post)
-            Log.d(
-                TAG,
-                "PostItemRecyclerAdapter.insertData, post = $post, data.size = ${data.size}"
-            )
-            notifyItemInserted(index)
-        } else {
-            throw IndexOutOfBoundsException("PostItemRecyclerAdapter.insertData() out of bound, index = $index but data.size = ${data.size}")
-        }
-    }
+class PostItemRecyclerAdapter(private val sharedPostViewModel: SharedPostViewModel) :
+    ListAdapter<Post, PostItemRecyclerAdapter.ViewHolder>(PostsComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
@@ -44,21 +20,17 @@ class PostItemRecyclerAdapter : RecyclerView.Adapter<PostItemRecyclerAdapter.Vie
         return ViewHolder(view)
     }
 
-    override fun getItemCount(): Int {
-        return data.size
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val post = data[position]
+        val post = getItem(position)
         holder.post = post
         holder.id.text = post.id.toString()
         holder.content.text = post.content
         holder.view.setOnClickListener {
-            EventBus.getDefault().post(PostClickedMessage(post))
+            sharedPostViewModel.setSelectedPost(post)
         }
     }
 
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val id: TextView = view.findViewById(R.id.item_post_id)
         val content: TextView = view.findViewById(R.id.item_post_content)
         var post: Post? = null
@@ -66,7 +38,16 @@ class PostItemRecyclerAdapter : RecyclerView.Adapter<PostItemRecyclerAdapter.Vie
         override fun toString(): String {
             return super.toString() + " '" + content.text + "'"
         }
+    }
 
+    class PostsComparator : DiffUtil.ItemCallback<Post>() {
+        override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
+            return oldItem === newItem
+        }
+
+        override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
+            return oldItem.toString() == newItem.toString()
+        }
     }
 
     companion object {
