@@ -7,3 +7,4 @@ package com.example.myapplication.chapter_1.model.entity
 sealed class MessageEvent
 class CreatePostMessage(val newPost: Post) : MessageEvent()
 class LikePostMessage(val id: Int, val like: Boolean) : MessageEvent()
+class PostClickedMessage(val post: Post) : MessageEvent()

@@ -28,7 +28,6 @@ import org.greenrobot.eventbus.ThreadMode
 class PostListFragment : Fragment(), IPostListView {
     private lateinit var postList: RecyclerView
     private lateinit var adapter: PostItemRecyclerAdapter
-    var postClickListener: OnPostClickListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +48,7 @@ class PostListFragment : Fragment(), IPostListView {
                 LinearLayoutManager(context)
             }
         }
-        adapter = PostItemRecyclerAdapter(onPostClickListener = postClickListener)
+        adapter = PostItemRecyclerAdapter()
         postList.adapter = adapter
 
         lifecycle.addObserver(PostListPresenter(this))
@@ -73,23 +72,18 @@ class PostListFragment : Fragment(), IPostListView {
                 adapter.insertData(event.newPost, 0)
                 postList.scrollToPosition(0)
             }
+            else -> {
+                // ignore
+            }
         }
     }
 
-    interface OnPostClickListener {
-        fun onPostClicked(post: Post)
-    }
-
     companion object {
-        fun newInstance(
-            columnCount: Int = 1,
-            onPostClickListener: OnPostClickListener? = null
-        ): PostListFragment {
+        fun newInstance(columnCount: Int = 1): PostListFragment {
             val args = Bundle()
             args.putInt(KEY_COLUMN_COUNT, columnCount)
             val fragment = PostListFragment()
             fragment.arguments = args
-            fragment.postClickListener = onPostClickListener
             return fragment
         }
     }

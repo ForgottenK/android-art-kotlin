@@ -1,15 +1,10 @@
 package com.example.myapplication.chapter_1.view
 
-import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.myapplication.R
-import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_SELECTED_POST
-import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
-import com.example.myapplication.chapter_1.model.entity.Post
 
 /**
  *    @author wangruixiang
@@ -17,36 +12,12 @@ import com.example.myapplication.chapter_1.model.entity.Post
  */
 class MainActivity : AppCompatActivity() {
 
-    var selectedPost: Post? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post_list)
 
-        addFragment(
-            R.id.fragment_post_list,
-            PostListFragment.newInstance(
-                onPostClickListener = object : PostListFragment.OnPostClickListener {
-                    override fun onPostClicked(post: Post) {
-                        selectedPost = post
-                        addFragment(R.id.fragment_post_detail, PostDetailFragment.newInstance(post))
-                    }
-                })
-        )
-        selectedPost = savedInstanceState?.getParcelable(KEY_SELECTED_POST)
-        Log.d(TAG, "MainActivity.onCreate, selectedPost = $selectedPost")
-        addFragment(R.id.fragment_post_detail, PostDetailFragment.newInstance(selectedPost))
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        Log.d(TAG, "MainActivity.onSaveInstanceState(), selectedPost = $selectedPost")
-        outState.putParcelable(KEY_SELECTED_POST, selectedPost)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        Log.d(TAG, "MainActivity.onConfigurationChanged()")
+        addFragment(R.id.fragment_post_list, PostListFragment.newInstance())
+        addFragment(R.id.fragment_post_detail, PostDetailFragment.newInstance())
     }
 }
 

@@ -8,13 +8,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.chapter_1.model.entity.Post
-import com.example.myapplication.chapter_1.view.PostListFragment
+import com.example.myapplication.chapter_1.model.entity.PostClickedMessage
+import org.greenrobot.eventbus.EventBus
 
-class PostItemRecyclerAdapter(onPostClickListener: PostListFragment.OnPostClickListener? = null) :
-    RecyclerView.Adapter<PostItemRecyclerAdapter.ViewHolder>() {
+class PostItemRecyclerAdapter : RecyclerView.Adapter<PostItemRecyclerAdapter.ViewHolder>() {
 
     private val data = mutableListOf<Post>()
-    var listener: PostListFragment.OnPostClickListener? = onPostClickListener
 
     fun setData(posts: List<Post>) {
         data.clear()
@@ -55,7 +54,7 @@ class PostItemRecyclerAdapter(onPostClickListener: PostListFragment.OnPostClickL
         holder.id.text = post.id.toString()
         holder.content.text = post.content
         holder.view.setOnClickListener {
-            listener?.onPostClicked(post)
+            EventBus.getDefault().post(PostClickedMessage(post))
         }
     }
 

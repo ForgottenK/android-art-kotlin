@@ -1,6 +1,7 @@
 package com.example.myapplication.chapter_1.view
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,10 +12,12 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.myapplication.R
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_POST
+import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_SELECTED_POST
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
 import com.example.myapplication.chapter_1.model.entity.LikePostMessage
 import com.example.myapplication.chapter_1.model.entity.MessageEvent
 import com.example.myapplication.chapter_1.model.entity.Post
+import com.example.myapplication.chapter_1.model.entity.PostClickedMessage
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -40,6 +43,12 @@ class PostDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        savedInstanceState?.getParcelable<Post>(KEY_SELECTED_POST)?.let {
+            post = it
+            Log.d(TAG, "PostDetailFragment.onViewCreated(), selectedPost = $post")
+        }
+
         detailText = view.findViewById(R.id.tv_fragment_detail_content)
         btnLikePost = view.findViewById(R.id.btn_post_liked)
         btnGotoDetail = view.findViewById(R.id.btn_goto_post_detail)
@@ -58,13 +67,6 @@ class PostDetailFragment : Fragment() {
         }
         btnGotoDetail.visibility = View.GONE
 
-        arguments?.getParcelable<Post>(KEY_POST)?.let {
-            post = it
-            updatePostStatus()
-            btnLikePost.visibility = View.VISIBLE
-            btnGotoDetail.visibility = View.VISIBLE
-        }
-
         EventBus.getDefault().register(this)
     }
 
@@ -77,7 +79,27 @@ class PostDetailFragment : Fragment() {
                     updatePostStatus()
                 }
             }
+            is PostClickedMessage -> {
+                post = event.post
+                updatePostStatus()
+                btnLikePost.visibility = View.VISIBLE
+                btnGotoDetail.visibility = View.VISIBLE
+            }
+            else -> {
+                // ignore
+            }
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        Log.d(TAG, "PostDetailFragment.onConfigurationChanged()")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.d(TAG, "PostDetailFragment.onSaveInstanceState(), selectedPost = $post")
+        outState.putParcelable(KEY_SELECTED_POST, post)
     }
 
     override fun onDestroyView() {
@@ -96,12 +118,8 @@ class PostDetailFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(post: Post?): PostDetailFragment {
-            val args = Bundle()
-            args.putParcelable(KEY_POST, post)
-            val fragment = PostDetailFragment()
-            fragment.arguments = args
-            return fragment
+        fun newInstance(): PostDetailFragment {
+            return PostDetailFragment()
         }
     }
 }
