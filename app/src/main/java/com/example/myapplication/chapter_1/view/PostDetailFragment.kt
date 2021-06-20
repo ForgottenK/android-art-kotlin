@@ -16,14 +16,9 @@ import com.example.myapplication.R
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_POST
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_SELECTED_POST
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
-import com.example.myapplication.chapter_1.model.entity.LikePostMessage
-import com.example.myapplication.chapter_1.model.entity.MessageEvent
 import com.example.myapplication.chapter_1.model.entity.Post
 import com.example.myapplication.chapter_1.viewmodel.SharedPostViewModel
 import com.example.myapplication.chapter_1.viewmodel.SharedPostViewModelFactory
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 /**
  *    @author wangruixiang
@@ -34,7 +29,7 @@ class PostDetailFragment : Fragment() {
     private lateinit var btnLikePost: Button
     private lateinit var btnGotoDetail: Button
 
-    private val postViewModel: SharedPostViewModel by activityViewModels {
+    private val sharedPostViewModel: SharedPostViewModel by activityViewModels {
         SharedPostViewModelFactory(MyApplication.instance!!.postRepository)
     }
 
@@ -50,7 +45,7 @@ class PostDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         savedInstanceState?.getParcelable<Post>(KEY_SELECTED_POST)?.let {
-            postViewModel.setSelectedPost(it)
+            sharedPostViewModel.setSelectedPost(it)
             Log.d(TAG, "PostDetailFragment.onViewCreated(), selectedPost = $it")
         }
 
@@ -59,15 +54,15 @@ class PostDetailFragment : Fragment() {
         btnGotoDetail = view.findViewById(R.id.btn_goto_post_detail)
 
         btnLikePost.setOnClickListener {
-            postViewModel.selectedPost.value?.let {
+            sharedPostViewModel.selectedPost.value?.let {
                 it.like = !it.like
-                postViewModel.setSelectedPost(it)
+                sharedPostViewModel.postRepository.fakeWritePost(it)
             }
         }
         btnLikePost.visibility = View.GONE
 
         btnGotoDetail.setOnClickListener {
-            val post = postViewModel.selectedPost.value!!
+            val post = sharedPostViewModel.selectedPost.value!!
             val intent = Intent(activity, PostDetailActivity::class.java)
             Log.d(TAG, "PostDetailFragment.onClick(), post.hashCode = ${post.hashCode()}")
             intent.putExtra(KEY_POST, post)
@@ -75,25 +70,16 @@ class PostDetailFragment : Fragment() {
         }
         btnGotoDetail.visibility = View.GONE
 
-        EventBus.getDefault().register(this)
-        postViewModel.selectedPost.observe(viewLifecycleOwner) {
+        sharedPostViewModel.selectedPost.observe(viewLifecycleOwner) {
             updatePostStatus(it)
         }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: MessageEvent) {
-        when (event) {
-            is LikePostMessage -> {
-                postViewModel.selectedPost.value?.let {
-                    if (it.id == event.id) {
-                        it.like = event.like
-                        postViewModel.setSelectedPost(it)
-                    }
-                }
+        sharedPostViewModel.postRepository.fakeWritePosts.observe(viewLifecycleOwner) { fakeWriteList ->
+            val currentId = sharedPostViewModel.selectedPost.value?.id
+            val fakeWritePost = fakeWriteList.lastOrNull { post ->
+                currentId == post.id
             }
-            else -> {
-                // ignore
+            fakeWritePost?.let {
+                sharedPostViewModel.setSelectedPost(fakeWritePost)
             }
         }
     }
@@ -105,14 +91,9 @@ class PostDetailFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val post = postViewModel.selectedPost.value!!
+        val post = sharedPostViewModel.selectedPost.value!!
         Log.d(TAG, "PostDetailFragment.onSaveInstanceState(), selectedPost = $post")
         outState.putParcelable(KEY_SELECTED_POST, post)
-    }
-
-    override fun onDestroyView() {
-        EventBus.getDefault().unregister(this)
-        super.onDestroyView()
     }
 
     private fun updatePostStatus(post: Post) {

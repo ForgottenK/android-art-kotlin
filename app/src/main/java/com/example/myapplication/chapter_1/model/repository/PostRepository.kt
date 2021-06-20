@@ -1,5 +1,7 @@
 package com.example.myapplication.chapter_1.model.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.myapplication.chapter_1.model.db.PostDao
 import com.example.myapplication.chapter_1.model.entity.Post
 import kotlinx.coroutines.Dispatchers
@@ -59,5 +61,20 @@ class PostRepository(private val postDao: PostDao) {
 
         return dates
     }
+
+    private val mutableFakeWritePosts: MutableLiveData<List<Post>> = MutableLiveData()
+
+    fun fakeWritePost(post: Post) {
+        val newList = mutableListOf<Post>()
+        mutableFakeWritePosts.value?.let {
+            newList.addAll(it)
+        }
+        newList.removeAll { it.id == post.id }
+        newList.add(post)
+        mutableFakeWritePosts.value = newList
+    }
+
+    val fakeWritePosts: LiveData<List<Post>> = mutableFakeWritePosts
+
 
 }

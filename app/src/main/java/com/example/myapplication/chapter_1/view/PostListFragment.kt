@@ -14,16 +14,11 @@ import com.example.myapplication.MyApplication
 import com.example.myapplication.R
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_COLUMN_COUNT
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
-import com.example.myapplication.chapter_1.model.entity.CreatePostMessage
-import com.example.myapplication.chapter_1.model.entity.MessageEvent
 import com.example.myapplication.chapter_1.model.entity.Post
 import com.example.myapplication.chapter_1.presenter.PostListPresenter
 import com.example.myapplication.chapter_1.view.adapter.PostItemRecyclerAdapter
 import com.example.myapplication.chapter_1.viewmodel.SharedPostViewModel
 import com.example.myapplication.chapter_1.viewmodel.SharedPostViewModelFactory
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 /**
  *    @author wangruixiang
@@ -34,9 +29,7 @@ class PostListFragment : Fragment(), IPostListView {
     private lateinit var adapter: PostItemRecyclerAdapter
 
     private val sharedPostViewModel by activityViewModels<SharedPostViewModel> {
-        SharedPostViewModelFactory(
-            MyApplication.instance!!.postRepository
-        )
+        SharedPostViewModelFactory(MyApplication.instance!!.postRepository)
     }
 
     override fun onCreateView(
@@ -62,36 +55,29 @@ class PostListFragment : Fragment(), IPostListView {
         postList.adapter = adapter
 
         lifecycle.addObserver(PostListPresenter(this))
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onDestroyView() {
-        EventBus.getDefault().unregister(this)
-        super.onDestroyView()
+        sharedPostViewModel.postRepository.fakeWritePosts.observe(viewLifecycleOwner) { fakeWriteList ->
+            var needScroll = false
+            val newList = mutableListOf<Post>()
+            newList.addAll(adapter.currentList)
+            for (post in fakeWriteList) {
+                val existPost = newList.find { post.id == it.id }
+                if (existPost == null) {
+                    newList.add(0, post)
+                    needScroll = true
+                } else {
+                    existPost.like = post.like
+                }
+            }
+            adapter.submitList(newList)
+            if (needScroll) {
+                postList.postDelayed({ postList.scrollToPosition(0) }, 100)
+            }
+        }
     }
 
     override fun onReceivePostListData(postList: List<Post>) {
         Log.d(TAG, "PostListFragment.onReceivePostListData(), postList.size = ${postList.size}")
         adapter.submitList(postList)
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: MessageEvent) {
-        when (event) {
-            is CreatePostMessage -> {
-                val posts = adapter.currentList.toMutableList()
-                if (posts.isNotEmpty()) {
-                    posts.add(0, event.newPost)
-                    adapter.submitList(posts)
-                    postList.scrollToPosition(0)
-                } else {
-                    throw IndexOutOfBoundsException("PostListFragment: insert to post list out of bound, current list is empty")
-                }
-            }
-            else -> {
-                // ignore
-            }
-        }
     }
 
     companion object {

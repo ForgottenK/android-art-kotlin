@@ -10,11 +10,8 @@ import com.example.myapplication.MyApplication
 import com.example.myapplication.R
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_POST
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
-import com.example.myapplication.chapter_1.model.entity.CreatePostMessage
-import com.example.myapplication.chapter_1.model.entity.LikePostMessage
 import com.example.myapplication.chapter_1.model.entity.Post
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import org.greenrobot.eventbus.EventBus
 
 /**
  *    @author wangruixiang
@@ -27,6 +24,7 @@ class PostDetailActivity : AppCompatActivity() {
     private lateinit var btnCreatePost: FloatingActionButton
 
     private lateinit var post: Post
+    private val postRepository by lazy { MyApplication.instance!!.postRepository }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,13 +42,13 @@ class PostDetailActivity : AppCompatActivity() {
         btnPostLike.setOnClickListener {
             post.like = !post.like
             updatePostStatus()
-            EventBus.getDefault().post(LikePostMessage(post.id, post.like))
+            postRepository.fakeWritePost(post)
         }
         btnPostLike.visibility = View.GONE
 
         btnCreatePost.setOnClickListener {
             val newPost = Post(MyApplication.userCreatedId, "master", "new post")
-            EventBus.getDefault().post(CreatePostMessage(newPost))
+            postRepository.fakeWritePost(newPost)
         }
     }
 

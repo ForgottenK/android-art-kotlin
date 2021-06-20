@@ -9,18 +9,16 @@ import com.example.myapplication.chapter_1.model.repository.PostRepository
  *    @author wangruixiang
  *    @date 2021/6/20 1:13 AM
  */
-class SharedPostViewModel(private val postRepository: PostRepository) : ViewModel() {
+class SharedPostViewModel(val postRepository: PostRepository) : ViewModel() {
     val allPosts: LiveData<List<Post>> = postRepository.getPosts().asLiveData()
 
-    private val mutableSelectedPost: MutableLiveData<Post> = MutableLiveData()
+    private val mutableSelectedPost = MutableLiveData<Post>()
+    val selectedPost: LiveData<Post> = mutableSelectedPost
 
     @MainThread
     fun setSelectedPost(post: Post) {
         mutableSelectedPost.value = post
     }
-
-    val selectedPost: LiveData<Post> = mutableSelectedPost
-
 }
 
 class SharedPostViewModelFactory(private val postRepository: PostRepository) :
