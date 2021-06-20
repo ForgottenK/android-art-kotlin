@@ -15,7 +15,6 @@ import com.example.myapplication.R
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_COLUMN_COUNT
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
 import com.example.myapplication.chapter_1.model.entity.Post
-import com.example.myapplication.chapter_1.presenter.PostListPresenter
 import com.example.myapplication.chapter_1.view.adapter.PostItemRecyclerAdapter
 import com.example.myapplication.chapter_1.viewmodel.SharedPostViewModel
 import com.example.myapplication.chapter_1.viewmodel.SharedPostViewModelFactory
@@ -24,7 +23,7 @@ import com.example.myapplication.chapter_1.viewmodel.SharedPostViewModelFactory
  *    @author wangruixiang
  *    @date 2021/6/14 11:52 PM
  */
-class PostListFragment : Fragment(), IPostListView {
+class PostListFragment : Fragment() {
     private lateinit var postList: RecyclerView
     private lateinit var adapter: PostItemRecyclerAdapter
 
@@ -54,30 +53,15 @@ class PostListFragment : Fragment(), IPostListView {
         adapter = PostItemRecyclerAdapter(sharedPostViewModel)
         postList.adapter = adapter
 
-        lifecycle.addObserver(PostListPresenter(this))
-        sharedPostViewModel.postRepository.fakeWritePosts.observe(viewLifecycleOwner) { fakeWriteList ->
-            var needScroll = false
-            val newList = mutableListOf<Post>()
-            newList.addAll(adapter.currentList)
-            for (post in fakeWriteList) {
-                val existPost = newList.find { post.id == it.id }
-                if (existPost == null) {
-                    newList.add(0, post)
-                    needScroll = true
-                } else {
-                    existPost.like = post.like
-                }
-            }
-            adapter.submitList(newList)
-            if (needScroll) {
+        sharedPostViewModel.allPosts.observe(viewLifecycleOwner) {
+            Log.d(TAG, "PostListFragment.onReceivePostListData(), postList.size = ${it.size}")
+            adapter.submitList(it)
+        }
+        sharedPostViewModel.needScroll.observe(viewLifecycleOwner) {
+            if (it) {
                 postList.postDelayed({ postList.scrollToPosition(0) }, 100)
             }
         }
-    }
-
-    override fun onReceivePostListData(postList: List<Post>) {
-        Log.d(TAG, "PostListFragment.onReceivePostListData(), postList.size = ${postList.size}")
-        adapter.submitList(postList)
     }
 
     companion object {

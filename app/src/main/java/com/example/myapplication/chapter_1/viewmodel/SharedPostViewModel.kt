@@ -14,20 +14,43 @@ import com.example.myapplication.chapter_1.view.PostDetailActivity
  *    @author wangruixiang
  *    @date 2021/6/20 1:13 AM
  */
-class SharedPostViewModel(val postRepository: PostRepository) : ViewModel() {
-    val allPosts: LiveData<List<Post>> = postRepository.getPosts().asLiveData()
+class SharedPostViewModel(private val postRepository: PostRepository) : ViewModel() {
+    private val repositoryPosts: LiveData<List<Post>> = postRepository.getPosts().asLiveData()
+    val allPosts = MediatorLiveData<List<Post>>()
+
+    private val mutableNeedScroll = MutableLiveData<Boolean>()
+    val needScroll: LiveData<Boolean> = mutableNeedScroll
 
     private val mutableSelectedPost: MutableLiveData<Post> = MutableLiveData()
-
-    @MainThread
-    fun setSelectedPost(post: Post) {
-        mutableSelectedPost.value = post
-    }
-
     val selectedPost: MediatorLiveData<Post> = MediatorLiveData<Post>()
 
     init {
+        initPostList()
         initSelectedPost()
+    }
+
+    private fun initPostList() {
+        allPosts.addSource(repositoryPosts) {
+            allPosts.value = repositoryPosts.value
+        }
+        allPosts.addSource(postRepository.fakeWritePosts) { fakeWriteList ->
+            var needScroll = false
+            val newList = mutableListOf<Post>()
+            allPosts.value?.let {
+                newList.addAll(it)
+            }
+            for (fakeWritePost in fakeWriteList) {
+                val existPost = newList.find { fakeWritePost.id == it.id }
+                if (existPost == null) {
+                    newList.add(0, fakeWritePost)
+                    needScroll = true
+                } else {
+                    existPost.like = fakeWritePost.like
+                }
+            }
+            allPosts.value = newList
+            mutableNeedScroll.value = needScroll
+        }
     }
 
     private fun initSelectedPost() {
@@ -44,6 +67,11 @@ class SharedPostViewModel(val postRepository: PostRepository) : ViewModel() {
             val fakeWritePost = fakeWriteList?.lastOrNull { currentId == it.id }
             selectedPost.value = fakeWritePost ?: currentPost
         }
+    }
+
+    @MainThread
+    fun setSelectedPost(post: Post) {
+        mutableSelectedPost.value = post
     }
 
     @MainThread
