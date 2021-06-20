@@ -1,6 +1,5 @@
 package com.example.myapplication.chapter_1.view
 
-import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.myapplication.MyApplication
 import com.example.myapplication.R
-import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_POST
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.KEY_SELECTED_POST
 import com.example.myapplication.chapter_1.model.entity.Constants.Companion.TAG
 import com.example.myapplication.chapter_1.model.entity.Post
@@ -54,33 +52,17 @@ class PostDetailFragment : Fragment() {
         btnGotoDetail = view.findViewById(R.id.btn_goto_post_detail)
 
         btnLikePost.setOnClickListener {
-            sharedPostViewModel.selectedPost.value?.let {
-                it.like = !it.like
-                sharedPostViewModel.postRepository.fakeWritePost(it)
-            }
+            sharedPostViewModel.onLikeClicked()
         }
         btnLikePost.visibility = View.GONE
 
         btnGotoDetail.setOnClickListener {
-            val post = sharedPostViewModel.selectedPost.value!!
-            val intent = Intent(activity, PostDetailActivity::class.java)
-            Log.d(TAG, "PostDetailFragment.onClick(), post.hashCode = ${post.hashCode()}")
-            intent.putExtra(KEY_POST, post)
-            startActivity(intent)
+            sharedPostViewModel.gotoDetailActivity(this@PostDetailFragment)
         }
         btnGotoDetail.visibility = View.GONE
 
         sharedPostViewModel.selectedPost.observe(viewLifecycleOwner) {
             updatePostStatus(it)
-        }
-        sharedPostViewModel.postRepository.fakeWritePosts.observe(viewLifecycleOwner) { fakeWriteList ->
-            val currentId = sharedPostViewModel.selectedPost.value?.id
-            val fakeWritePost = fakeWriteList.lastOrNull { post ->
-                currentId == post.id
-            }
-            fakeWritePost?.let {
-                sharedPostViewModel.setSelectedPost(fakeWritePost)
-            }
         }
     }
 

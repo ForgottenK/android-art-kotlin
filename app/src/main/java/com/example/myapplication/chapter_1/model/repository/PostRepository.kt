@@ -22,6 +22,7 @@ class PostRepository(private val postDao: PostDao) {
         emit(getPostListFromNetwork())
     }.flowOn(Dispatchers.IO)
 
+    // database data
     suspend fun savePostsToDB(posts: List<Post>) {
         postDao.deleteAllPosts()
         for (post in posts) {
@@ -33,6 +34,7 @@ class PostRepository(private val postDao: PostDao) {
         postDao.deleteAllPosts()
     }
 
+    // network data
     private suspend fun getPostListFromNetwork(): List<Post> {
         val users = listOf("frank", "bob", "mary", "eric", "kevin", "tom", "justin")
         val dates = generateDates()
@@ -62,19 +64,14 @@ class PostRepository(private val postDao: PostDao) {
         return dates
     }
 
+    // fake write data
+    private val fakeWritePostMap: MutableMap<Int, Post> = mutableMapOf()
     private val mutableFakeWritePosts: MutableLiveData<List<Post>> = MutableLiveData()
 
     fun fakeWritePost(post: Post) {
-        val newList = mutableListOf<Post>()
-        mutableFakeWritePosts.value?.let {
-            newList.addAll(it)
-        }
-        newList.removeAll { it.id == post.id }
-        newList.add(post)
-        mutableFakeWritePosts.value = newList
+        fakeWritePostMap[post.id] = post
+        mutableFakeWritePosts.value = fakeWritePostMap.values.toList()
     }
 
     val fakeWritePosts: LiveData<List<Post>> = mutableFakeWritePosts
-
-
 }
