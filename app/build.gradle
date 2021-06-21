@@ -15,12 +15,12 @@ android {
         versionCode 1
         versionName "1.0"
 
-        // used by Room, to test migrations
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        // used by Room, to test migrations
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
     }
@@ -49,6 +49,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    sourceSets {
+        // Adds exported schema location as test app assets.
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
 }
 
 dependencies {
@@ -74,6 +78,7 @@ dependencies {
     kapt("androidx.room:room-compiler:$room_version")
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
+    // room testing
     androidTestImplementation "androidx.room:room-testing:2.2.5"
 
     // leak canary
