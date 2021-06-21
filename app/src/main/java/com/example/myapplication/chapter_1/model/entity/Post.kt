@@ -18,14 +18,16 @@ data class Post(
     var user: String,
     var content: String,
     var date: Date = Date(),
-    @ColumnInfo(name = "like_post", defaultValue = "0") var like: Boolean = false
+    @ColumnInfo(name = "like_post", defaultValue = "0") var like: Boolean = false,
+    @ColumnInfo(name = "like_count") var likeCount: Int? = 0
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         Date(parcel.readLong()),
-        parcel.readString().toBoolean()
+        parcel.readString().toBoolean(),
+        parcel.readInt()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -34,6 +36,7 @@ data class Post(
         parcel.writeString(content)
         parcel.writeLong(date.time)
         parcel.writeString(like.toString())
+        parcel.writeInt(likeCount ?: 0)
     }
 
     override fun describeContents(): Int {

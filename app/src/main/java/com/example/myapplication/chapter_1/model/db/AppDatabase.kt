@@ -13,7 +13,7 @@ import com.example.myapplication.chapter_1.model.entity.Post
  *    @author wangruixiang
  *    @date 2021/6/16 1:27 PM
  */
-@Database(entities = [Post::class], version = 2)
+@Database(entities = [Post::class], version = 3)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -28,6 +28,14 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE post_table ADD COLUMN like_count INTEGER")
+            }
+        }
+
+        val ALL_MIGRATIONS = arrayOf(MIGRATION_1_2, MIGRATION_2_3)
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -40,7 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
         private fun buildDatabase(context: Context): AppDatabase {
             val applicationContext = context.applicationContext
             return Room.databaseBuilder(applicationContext, AppDatabase::class.java, DB_NAME)
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(*ALL_MIGRATIONS)
                 .fallbackToDestructiveMigration()
                 .build()
         }

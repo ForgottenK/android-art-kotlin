@@ -19,7 +19,7 @@ class PostRepository(private val postDao: PostDao) {
 
     fun getPosts(): Flow<List<Post>> = flow {
         emit(postDao.getAllPosts())
-        emit(getPostListFromNetwork())
+        emit(getPostListFromNetwork().also { savePostsToDB(it) })
     }.flowOn(Dispatchers.IO)
 
     // database data
@@ -42,8 +42,7 @@ class PostRepository(private val postDao: PostDao) {
         for (i in 1..30) {
             networkPosts.add(Post(i, users.random(), "Post #$i", dates.random()))
         }
-        delay(10000)
-        savePostsToDB(networkPosts)
+        delay(5000)
         return networkPosts
     }
 
@@ -62,6 +61,22 @@ class PostRepository(private val postDao: PostDao) {
         dates.add(calendar.time)
 
         return dates
+    }
+
+    suspend fun testPostListFromNetwork(): List<Post> {
+        val users = listOf("frank", "bob", "mary", "eric", "kevin", "tom", "justin")
+        val dates = generateDates()
+        val likeCounts = listOf(1, 2, 3, null)
+        val networkPosts = mutableListOf<Post>()
+        for (i in 1..30) {
+            val element = Post(
+                i, users.random(), "Post #$i", dates.random(),
+                likeCount = likeCounts.random()
+            )
+            networkPosts.add(element)
+        }
+        delay(500)
+        return networkPosts
     }
 
     // fake write data
