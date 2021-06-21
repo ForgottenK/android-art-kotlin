@@ -11,7 +11,7 @@ import com.example.myapplication.chapter_1.model.entity.Post
  *    @author wangruixiang
  *    @date 2021/6/16 1:27 PM
  */
-@Database(entities = [Post::class], version = 1, exportSchema = false)
+@Database(entities = [Post::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
