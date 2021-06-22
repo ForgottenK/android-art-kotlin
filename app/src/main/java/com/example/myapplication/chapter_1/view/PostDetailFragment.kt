@@ -73,9 +73,10 @@ class PostDetailFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val post = sharedPostViewModel.selectedPost.value!!
-        Log.d(TAG, "PostDetailFragment.onSaveInstanceState(), selectedPost = $post")
-        outState.putParcelable(KEY_SELECTED_POST, post)
+        sharedPostViewModel.selectedPost.value?.let { post ->
+            Log.d(TAG, "PostDetailFragment.onSaveInstanceState(), selectedPost = $post")
+            outState.putParcelable(KEY_SELECTED_POST, post)
+        }
     }
 
     private fun updatePostStatus(post: Post) {
